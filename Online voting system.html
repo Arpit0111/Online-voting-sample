@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Voting System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to bottom right, #667eea 0%, #764ba2 100%);
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    .hidden {
+      display: none;
+    }
+    button {
+      min-height: 48px;
+    }
+    input {
+      min-height: 48px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+  <div class="container">
+    <!-- Welcome Section -->
+    <div id="welcome-section" class="text-center">
+      <h1 class="text-4xl font-bold mb-6 text-indigo-700">Welcome to Digi Voting System</h1>
+      <p class="mb-6 text-lg">Your secure digital platform for participating in elections. Click below to log in and cast your vote.</p>
+      <button id="start-voting" class="bg-indigo-600 text-white px-8 py-4 rounded-lg hover:bg-indigo-700 text-xl font-semibold shadow-lg">Start Voting</button>
+    </div>
+
+    <!-- Login Section -->
+    <div id="login-section" class="hidden text-center">
+      <h2 class="text-3xl font-bold mb-6 text-indigo-700">Login to Vote</h2>
+      <form id="login-form">
+        <input type="text" id="username" placeholder="Username" class="w-full p-4 mb-4 border border-gray-300 rounded-lg text-xl" required />
+        <input type="password" id="password" placeholder="Password" class="w-full p-4 mb-6 border border-gray-300 rounded-lg text-xl" required />
+        <button type="submit" class="bg-green-600 text-white px-8 py-4 rounded-lg hover:bg-green-700 text-xl font-semibold shadow-lg">Login and Proceed</button>
+      </form>
+      <p class="mt-6 text-lg"><a href="#" id="admin-link" class="text-indigo-600 hover:underline font-semibold">Access Admin Panel</a></p>
+    </div>
+
+    <!-- Voting Section -->
+    <div id="vote-section" class="hidden text-center">
+      <h2 class="text-3xl font-bold mb-6 text-indigo-700">Cast Your Vote</h2>
+      <p class="mb-6 text-lg">Select your candidate below. Remember, you can vote only once per session:</p>
+      <form id="vote-form" class="space-y-4">
+        <label class="block text-lg font-medium">
+          <input type="radio" name="candidate" value="candidate1" required class="mr-3 h-5 w-5" />
+          Candidate 1 - Leader A
+        </label>
+        <label class="block text-lg font-medium">
+          <input type="radio" name="candidate" value="candidate2" required class="mr-3 h-5 w-5" />
+          Candidate 2 - Leader B
+        </label>
+        <label class="block text-lg font-medium">
+          <input type="radio" name="candidate" value="candidate3" required class="mr-3 h-5 w-5" />
+          Candidate 3 - Leader C
+        </label>
+        <button type="submit" class="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 text-xl font-semibold shadow-lg mt-6">Submit Your Vote</button>
+      </form>
+    </div>
+
+    <!-- Success Section -->
+    <div id="success-section" class="hidden text-center">
+      <h2 class="text-3xl font-bold mb-6 text-green-700">Vote Submitted Successfully!</h2>
+      <p class="mb-6 text-lg">Thank you for participating in the Digi voting system. Your vote has been recorded and is secure.</p>
+      <button id="back-to-welcome" class="bg-indigo-600 text-white px-8 py-4 rounded-lg hover:bg-indigo-700 text-xl font-semibold shadow-lg">Back to Start</button>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 class="text-3xl font-bold mb-6">Admin Login</h2>
+        <form id="admin-form">
+          <input type="text" id="admin-username" placeholder="Username" class="w-full p-4 mb-4 border border-gray-300 rounded-lg text-xl" required />
+          <input type="password" id="admin-password" placeholder="Password" class="w-full p-4 mb-6 border border-gray-300 rounded-lg text-xl" required />
+          <button type="submit" class="bg-red-600 text-white px-8 py-4 rounded-lg hover:bg-red-700 text-xl font-semibold shadow-lg mr-4">Login</button>
+          <button type="button" id="close-admin" class="bg-gray-600 text-white px-8 py-4 rounded-lg hover:bg-gray-700 text-xl font-semibold shadow-lg">Cancel</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" class="hidden text-center">
+      <h2 class="text-3xl font-bold mb-6 text-red-700">Admin Dashboard</h2>
+      <p class="mb-6 text-lg">Live Vote Results:</p>
+      <ul id="vote-results" class="text-left mb-6 space-y-4 text-lg"></ul>
+      <button id="clear-votes" class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 text-lg font-semibold shadow-lg mr-4">Clear All Votes</button>
+      <button id="back-from-admin" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 text-lg font-semibold shadow-lg">Back to Start</button>
+    </div>
+  </div>
+
+  <script>
+    // Start Voting Button
+    document.getElementById('start-voting').addEventListener('click', () => {
+      document.getElementById('welcome-section').classList.add('hidden');
+      document.getElementById('login-section').classList.remove('hidden');
+    });
+
+    // Login Form
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      localStorage.setItem('currentUser', username); // ✅ save username
+      document.getElementById('login-section').classList.add('hidden');
+      document.getElementById('vote-section').classList.remove('hidden');
+    });
+
+    // Vote Form
+    document.getElementById('vote-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const voted = localStorage.getItem('hasVoted');
+      if (voted === 'true') {
+        alert('You have already voted in this session.');
+        return;
+      }
+
+      const candidate = document.querySelector('input[name="candidate"]:checked').value;
+      const username = localStorage.getItem('currentUser') || "Unknown User";
+
+      localStorage.setItem('hasVoted', 'true');
+
+      // ✅ Save vote with user
+      const votes = JSON.parse(localStorage.getItem('votes') || '{}');
+      votes[candidate] = votes[candidate] || { count: 0, voters: [] };
+      votes[candidate].count++;
+      votes[candidate].voters.push(username);
+
+      localStorage.setItem('votes', JSON.stringify(votes));
+
+      document.getElementById('vote-section').classList.add('hidden');
+      document.getElementById('success-section').classList.remove('hidden');
+    });
+
+    // Back to Welcome
+    document.getElementById('back-to-welcome').addEventListener('click', () => {
+      document.getElementById('success-section').classList.add('hidden');
+      document.getElementById('welcome-section').classList.remove('hidden');
+      localStorage.removeItem('hasVoted');
+    });
+
+    // Admin Link
+    document.getElementById('admin-link').addEventListener('click', () => {
+      document.getElementById('admin-modal').classList.remove('hidden');
+    });
+
+    // Admin Form
+    document.getElementById('admin-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('admin-username').value;
+      const password = document.getElementById('admin-password').value;
+      if (username === 'arpit001' && password === 'Arpit@11') {
+        document.getElementById('admin-modal').classList.add('hidden');
+        displayVotes();
+        document.getElementById('admin-dashboard').classList.remove('hidden');
+      } else {
+        alert('Invalid admin credentials.');
+      }
+      e.target.reset();
+    });
+
+    // Close Admin Modal
+    document.getElementById('close-admin').addEventListener('click', () => {
+      document.getElementById('admin-modal').classList.add('hidden');
+    });
+
+    // Display Votes
+    function displayVotes() {
+      const votes = JSON.parse(localStorage.getItem('votes') || '{}');
+      const results = document.getElementById('vote-results');
+      results.innerHTML = '';
+      for (const [key, value] of Object.entries(votes)) {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>Candidate ${key.replace('candidate','')}:</strong> ${value.count} vote(s)<br>
+                        <span class="text-gray-700">Voters: ${value.voters.join(', ')}</span>`;
+        results.appendChild(li);
+      }
+    }
+
+    // Clear Votes
+    document.getElementById('clear-votes').addEventListener('click', () => {
+      if (confirm('Clear all votes?')) {
+        localStorage.removeItem('votes');
+        localStorage.removeItem('hasVoted');
+        displayVotes();
+      }
+    });
+
+    // Back from Admin
+    document.getElementById('back-from-admin').addEventListener('click', () => {
+      document.getElementById('admin-dashboard').classList.add('hidden');
+      document.getElementById('welcome-section').classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>
